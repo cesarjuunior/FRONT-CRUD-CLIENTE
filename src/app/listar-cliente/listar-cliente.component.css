@@ -1,0 +1,25 @@
+.form-container {
+  width: 400px;
+  margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.telefone-group {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.telefone-group input {
+  margin-right: 5px;
+}
+
+button[type="button"] {
+  background-color: #ccc;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 10px;
+}

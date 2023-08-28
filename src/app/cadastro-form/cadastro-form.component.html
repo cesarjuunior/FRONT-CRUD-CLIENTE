@@ -1,0 +1,85 @@
+<p-toast></p-toast>
+<p-panel header="Adicionar cliente">
+  <form [formGroup]="form">
+    <div class="form-group ">
+      <div class="field grid">
+        <label for="nome" class="col-fixed" style="width:100px">Nome</label>
+        <div class="col">
+          <input id="nome" formControlName="nome" type="text" pInputText required>
+          <small class="p-error" style="margin-left: 5px" *ngIf="!this.form.get('nome')?.value && this.form.get('nome')?.touched"><b>Campo obrigatório.</b></small>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="field grid">
+        <label class="col-fixed" style="width:100px">Tipo</label>
+        <div class="col">
+          <div class="formgroup-inline">
+            <div class="field-radiobutton">
+              <p-radioButton name="tipo" value="PJ" formControlName="tipo" inputId="tipoPJ" (onClick)="habilitaCampoCpfCnpj()" ></p-radioButton>
+              <label>PJ</label>
+            </div>
+            <div class="field-radiobutton">
+              <p-radioButton name="tipo" value="PF" formControlName="tipo" inputId="tipoPF" (onClick)="habilitaCampoCpfCnpj()"></p-radioButton>
+              <label>PF</label>
+            </div>
+            <small class="p-error" style="margin-left: 5px" *ngIf="!this.form.get('tipo')?.value && this.form.get('tipo')?.touched"><b>Campo obrigatório.</b></small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="field grid">
+        <label class="col-fixed" style="width:100px">CPF/CNPJ</label>
+        <div class="col">
+          <p-inputMask [mask]="this.defineMascara()" formControlName="cpfCnpj"></p-inputMask>
+          <small class="p-error" style="margin-left: 5px" *ngIf="!this.form.get('cpfCnpj')?.value && this.form.get('cpfCnpj')?.touched"><b>Campo obrigatório.</b></small>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="field grid">
+        <label for="rgIe" class="col-fixed" style="width:100px">RG/IE</label>
+        <div class="col">
+          <input type="text" id="rgIe" formControlName="rgIe" pInputText/>
+        </div>
+      </div>
+    </div>
+    <p-divider align="left">
+      <div class="inline-flex align-items-center">
+        <em class="fa fa-phone mr-2"></em>
+        <b>Telefones de Contato</b>
+      </div>
+    </p-divider>
+    <div class="formgroup-inline">
+      <div class="field">
+        <label for="rgIe" class="col-fixed" style="width:100px">DDD</label>
+        <p-inputMask mask="99" formControlName="ddd"></p-inputMask>
+      </div>
+      <div class="field">
+        <label for="rgIe" class="col-fixed" style="width:100px">Número</label>
+        <p-inputMask mask="99999-9999" formControlName="numero"></p-inputMask>
+      </div>
+      <div class="field">
+        <button pButton pRipple type="button" label="Adicionar" (click)="adicionarTelefone()" class="p-button-rounded p-button-success p-button-sm"></button>
+      </div>
+    </div>
+    <div *ngIf="listaTelefones.length > 0" class="col-3" >
+      <p-table [value]="this.listaTelefones">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>DDD</th>
+            <th>Número</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-tel>
+          <tr>
+            <td>{{tel.ddd}}</td>
+            <td>{{tel.numero}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <p-button (onClick)="salvar()">Salvar</p-button>
+  </form>
+</p-panel>

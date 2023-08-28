@@ -1,0 +1,161 @@
+<p-toast></p-toast>
+<div class="card" style="margin-top: 10px">
+  <p-table [value]="clientes" [lazy]="true" (onLazyLoad)="loadData($event)" dataKey="id"
+           [tableStyle]="{'min-width': '75rem'}"
+           [paginator]="true" [rows]="5" [totalRecords]="totalRecords" [loading]="loading">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width:20rem">Nome</th>
+        <th style="width:15rem"> Cpf/Cnpj</th>
+        <th style="width:15rem">Rg/Ie</th>
+        <th style="width:10rem">Tipo Pessoa</th>
+        <th style="width:15rem">Status</th>
+        <th></th>
+      </tr>
+      <tr>
+        <th style="width:20rem">
+          <p-columnFilter [showMenu]="false" type="text" field="nome"></p-columnFilter>
+        </th>
+        <th></th>
+        <th style="min-width:10rem"></th>
+        <th></th>
+        <th style="min-width:10rem">
+          <p-columnFilter [showMenu]="false" type="text" field="status">
+            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+              <p-dropdown [ngModel]="value" [options]="filtroStatus" (onChange)="filter($event.value)"
+                          placeholder="Status">
+                <ng-template let-option pTemplate="item">
+                  <span>{{option.label}}</span>
+                </ng-template>
+              </p-dropdown>
+            </ng-template>
+          </p-columnFilter>
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cliente>
+      <tr>
+        <td>{{cliente.nome}}</td>
+        <td>{{cliente.cpfCnpj}}</td>
+        <td>{{cliente.rgIe}}</td>
+        <td>{{cliente.tipo}}</td>
+        <td>{{cliente.status ? 'Ativo' : 'Inativo'}}</td>
+        <td>
+          <button pButton pRipple icon="fa fa-edit" class="p-button-rounded p-button-success mr-2"
+                  (click)="editarCliente(cliente)"></button>
+          <button pButton pRipple icon="fa fa-trash" class="p-button-rounded p-button-danger"
+                  (click)="deletarCliente(cliente)"></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="flex align-items-center justify-content-between">
+        Total de clientes {{this.clientes ? this.totalRecords : 0 }}.
+      </div>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [(visible)]="permiteEditarCliente" [style]="{width: '600px'}" header="Detalhes do cliente" [modal]="true"
+          styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <form [formGroup]="formEdit">
+      <div class="field">
+        <label for="nome">Name</label>
+        <input type="text" pInputText id="nome" formControlName="nome" required autofocus/>
+      </div>
+      <div class="field">
+        <label>Tipo Pessoa</label>
+        <div class="formgroup-inline">
+          <div class="field-radiobutton">
+            <p-radioButton name="tipo" value="PJ" formControlName="tipo" inputId="tipoPJ"></p-radioButton>
+            <label>PJ</label>
+          </div>
+          <div class="field-radiobutton">
+            <p-radioButton name="tipo" value="PF" formControlName="tipo" inputId="tipoPF"></p-radioButton>
+            <label>PF</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <div class="formgroup-inline">
+          <div class="field-radiobutton">
+            <p-radioButton name="status" [value]="true" formControlName="status" inputId="ativo"></p-radioButton>
+            <label>Ativo</label>
+          </div>
+          <div class="field-radiobutton">
+            <p-radioButton name="status" [value]="false" formControlName="status" inputId="inativo"></p-radioButton>
+            <label>Inativo</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cpfCnpj">CPF/CNPJ</label>
+        <input type="text" pInputText id="cpfCnpj" formControlName="cpfCnpj" required autofocus/>
+      </div>
+      <div class="field">
+        <label for="rgIe">RG/IE</label>
+        <input type="text" pInputText id="rgIe" formControlName="rgIe" required autofocus/>
+      </div>
+      <p-divider align="left">
+        <div class="inline-flex align-items-center">
+          <em class="fa fa-phone mr-2"></em>
+          <b>Telefones de Contato</b>
+        </div>
+      </p-divider>
+      <div class="col-12">
+        <p-table [value]="this.listaTelefones">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width:15rem">DDD</th>
+              <th style="width:15rem">Número</th>
+              <th style="width:15rem"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-tel>
+            <tr>
+              <td>
+                <ng-container *ngIf="!tel.permiteEditar; else editMode">
+                  {{ tel.ddd }}
+                </ng-container>
+                <ng-template #editMode>
+                  <p-inputMask mask="99" formControlName="ddd"></p-inputMask>
+                </ng-template>
+              <td>
+                <ng-container *ngIf="!tel.permiteEditar; else editMode2">
+                  {{ tel.numero }}
+                </ng-container>
+                <ng-template #editMode2>
+                  <p-inputMask mask="99999-9999" formControlName="numero"></p-inputMask>
+                </ng-template>
+              </td>
+              <td>
+                <button pButton *ngIf="tel.permiteEditar" pRipple icon="fa fa-check"
+                        class="p-button-rounded p-button-success p-button-sm" (click)="atualizarCliente(tel)"></button>
+                <button pButton *ngIf="!tel.permiteEditar" pRipple icon="fa fa-edit"
+                        class="p-button-rounded p-button-success p-button-sm" (click)="editarTelefone(tel)"></button>
+                <button pButton *ngIf="!tel.permiteEditar" pRipple icon="fa fa-trash" class="p-button-rounded p-button-danger p-button-sm"
+                        (click)="excluirTelefone(tel)"></button>
+                <button pButton *ngIf="tel.permiteEditar" pRipple icon="fa fa-ban" class="p-button-rounded p-button-danger p-button-sm"
+                        (click)="cancelarEdicao(tel)"></button>
+
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </form>
+
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="fecharModal()"></button>
+    <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text"
+            (click)="salvarAlteracoes()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
